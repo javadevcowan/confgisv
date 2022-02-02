@@ -1,0 +1,302 @@
+server:
+  port: 8080
+  tomcat:
+    accept-count: 50
+    connection-timeout: 5s
+    max-connections: 10000
+    threads:
+      max: 400
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: metrics, health, prometheus, info, loggers
+      base-path: /
+  metrics:
+    export:
+      datadog:
+        enabled: false
+  endpoint:
+    loggers:
+      enabled: true
+    health:
+      show-details: always
+
+
+spring:
+  cache.type: SIMPLE
+  kafka:
+    listener:
+      missing-topics-fatal: false
+    bootstrap-servers: localhost:9092
+    jaas.enabled: false
+    jaas.options.username:
+    jaas.options.password:
+    jaas.login-module: org.apache.kafka.common.security.scram.ScramLoginModule
+    properties:
+      reconnect.backoff.ms: 1000
+      specific.avro.reader: true
+      retry.backoff.ms: 10000
+      schema.registry.url: http://127.0.0.1:8081
+      sasl.mechanism: SCRAM-SHA-256
+      security.protocol: PLAINTEXT
+      max.in.flight.requests.per.connection: 1
+      # Delegate deserializers
+      spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+      spring.deserializer.value.delegate.class: io.confluent.kafka.serializers.KafkaAvroDeserializer
+    consumer:
+      max-poll-records: 1
+      enable-auto-commit: true
+      group-id: ad-rtb-server
+      # Configures the Spring Kafka ErrorHandlingDeserializer that delegates to the 'real' deserializers
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+    producer:
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+  application:
+    name: ad-rtb-server
+    version: ${appVersion}
+  main:
+    banner-mode: "off"
+
+app:
+  gatewayAuth:
+    clientId: foo
+    clientSecret: bar
+    audience: fooBar
+  client:
+    moderation:
+      host: https://moderation-api.dev.private.develop.farm/api/v1
+  client.asset-lookup:
+    url: https://vc-asset-lookup.dev.develop.farm/api/v1
+
+  redis:
+    node-addresses: rediss://clustercfg.play-decider-v2-dev.x9eq1v.memorydb.eu-west-1.amazonaws.com:6379
+    deal-version: v1
+    asset-version: v1
+  markets:
+    enabled:
+      - JCDECAUX_AU
+      - JCDECAUX_NZ
+      - JCDECAUX_FR_MU
+      - JCDECAUX_FR_AIRPORT
+      - VIOOH_E2E_ADSERVER
+      - VIOOH_LOCAL
+      - VIOOH_EXTERNAL
+      - VIOOH_HEXXUS
+      - MEDIATRANSPORTS_FR
+      - BRANDEDCITIES_US
+    configs:
+      APG_CH:
+        currency: CHF
+        timeZone: Etc/UTC
+        defaultCountryCode: CHE
+      JCDECAUX_AU:
+        currency: AUD
+        timeZone: Australia/Sydney
+        defaultCountryCode: AUS
+      JCDECAUX_BE:
+        currency: EUR
+        timeZone: Etc/UTC
+        defaultCountryCode: BEL
+      JCDECAUX_DE:
+        currency: EUR
+        timeZone: Etc/UTC
+        defaultCountryCode: DEU
+      JCDECAUX_DK:
+        currency: EUR
+        timeZone: Etc/UTC
+        defaultCountryCode: DNK
+      JCDECAUX_ES:
+        currency: EUR
+        timeZone: Etc/UTC
+        defaultCountryCode: ESP
+      JCDECAUX_FI:
+        currency: EUR
+        timeZone: Etc/UTC
+        defaultCountryCode: FIN
+      JCDECAUX_FR:
+        currency: EUR
+        timeZone: Etc/UTC
+        defaultCountryCode: FRA
+      JCDECAUX_GB:
+        currency: GBP
+        timeZone: Etc/UTC
+        defaultCountryCode: GBR
+      JCDECAUX_HK_AIRPORT:
+        currency: HKD
+        timeZone: Etc/UTC
+        defaultCountryCode: HKG
+      JCDECAUX_IT:
+        currency: EUR
+        timeZone: Etc/UTC
+        defaultCountryCode: ITA
+      JCDECAUX_NL:
+        currency: EUR
+        timeZone: Etc/UTC
+        defaultCountryCode: NLD
+      JCDECAUX_SG:
+        currency: SGD
+        timeZone: Etc/UTC
+        defaultCountryCode: SGP
+      JCDECAUX_US:
+        currency: USD
+        timeZone: Etc/UTC
+        defaultCountryCode: USA
+      VIOOH_LOCAL:
+        currency: USD
+        timeZone: Etc/UTC
+        defaultCountryCode: GBR
+      VIOOH_HEXXUS:
+        currency: USD
+        timeZone: Etc/UTC
+        defaultCountryCode: GBR
+      VIOOH_EXTERNAL:
+        currency: GBP
+        timeZone: Europe/London
+        defaultCountryCode: GBR
+      JCDECAUX_FR_MU:
+        currency: EUR
+        timeZone: CET
+        defaultCountryCode: FRA
+      JCDECAUX_NZ:
+        currency: NZD
+        timeZone: Pacific/Auckland
+        defaultCountryCode: NZL
+      VIOOH_E2E_ADSERVER:
+        currency: GBP
+        timeZone: Europe/London
+        defaultCountryCode: GBR
+      JCDECAUX_FR_AIRPORT:
+        currency: EUR
+        timeZone: CET
+        defaultCountryCode: FRA
+      MEDIATRANSPORTS_FR:
+        currency: EUR
+        timeZone: CET
+        defaultCountryCode: FRA
+      BRANDEDCITIES_US:
+        currency: USD
+        timeZone: MST
+        defaultCountryCode: USA
+      CATMOUSE_AU:
+        currency: AUD
+        timeZone: Australia/Sydney
+        defaultCountryCode: AUS
+      JCDECAUX_BR:
+        currency: BRL
+        timeZone: Brazil/East
+        defaultCountryCode: BRA
+  site-info:
+    publisher-names:
+      JCDECAUX_AU: "JCDecaux"
+      JCDECAUX_NZ: "JCDecaux"
+      JCDECAUX_FR_MU: "JCDecaux"
+      JCDECAUX_FR_AIRPORT: "JCDecaux"
+      VIOOH_E2E_ADSERVER: "JCDecaux"
+      VIOOH_LOCAL: "JCDecaux"
+      VIOOH_EXTERNAL: "JCDecaux"
+      VIOOH_HEXXUS: "JCDecaux"
+      BRANDEDCITIES_US: "BRANDEDCITIES_US"
+      MEDIATRANSPORTS_FR: "MEDIATRANSPORTS_FR"
+    publisher-domains:
+      JCDECAUX_AU: "http://www.jcdecaux.co.uk/"
+      JCDECAUX_NZ: "http://www.jcdecaux.co.uk/"
+      JCDECAUX_FR_MU: "http://www.jcdecaux.co.uk/"
+      JCDECAUX_FR_AIRPORT: "http://www.jcdecaux.co.uk/"
+      VIOOH_E2E_ADSERVER: "http://www.jcdecaux.co.uk/"
+      VIOOH_LOCAL: "http://www.jcdecaux.co.uk/"
+      VIOOH_EXTERNAL: "http://www.jcdecaux.co.uk/"
+      VIOOH_HEXXUS: "http://www.jcdecaux.co.uk/"
+      BRANDEDCITIES_US: "https://brandedcities.com/us/"
+      MEDIATRANSPORTS_FR: "http://www.mediatransports.com/"
+  data:
+    auction:
+      resultRetentionMillis: 10000
+    asset:
+      cache:
+        enable: true
+        cron: "0 17 * * * *"
+    asset-play-event:
+      enable: true
+    visual-unit:
+      cache:
+        cron: "0 0 * * * *"
+  security:
+    psks:
+      # Format:
+#       fnac:
+#          name: FNAC test
+#          key: "skhuzdkuyv,njsdziujkuesdubx]"
+#          markets:
+#            - VIOOH_LOCAL
+#       jcdecauxAu:
+#          name: JCDecaux Australia
+#          key: "e.g. skhuzdkuyv,njsdziujkuesdubx]"
+#          markets:
+#              - VIOOH_LOCAL
+#              - JCDECAUX_AU
+
+    psk-header: x-adclient-auth
+  kafka:
+    enable: true
+    topic:
+      inbound:
+        assets: local.asset.asset
+        deals: local.ad-rtb-server.deal
+      outbound:
+        assetPlayEvent: local.ad-rtb-server.asset-play-event
+  http:
+    connection:
+      max-connections: 400000
+  tcp:
+    readTimeoutMillis: 100000
+    connectTimeoutMillis: 15000
+
+viooh:
+  tracing:
+    urlPatterns:
+      - "/v1/players/creative"
+amazon:
+  dynamodb:
+    region: "eu-west-1"
+    tableName: "ad-rtb-server-local"
+    endpoint: "http://localhost:8000"
+    clientExecutionTimeoutMillis: 80000
+    connectionTimeoutMillis: 2000
+    requestTimeoutMillis: 1500
+    socketTimeoutMillis: 2500
+    retries: 3
+
+audience:
+  host: https://audience-api.dev.develop.farm
+  category-ids:
+    JCDECAUX_AU: "A001"
+    JCDECAUX_NZ: "NZ001"
+  category-names:
+    JCDECAUX_AU: "AU Pilot Audience Category"
+    JCDECAUX_NZ: "NZ Pilot Audience Category"
+  impressions:
+    baseUrl: /v1/audiences/primary
+  http:
+    retry:
+      max-attempts: 0
+      min-backoff: 50
+
+exchange:
+  host: https://exchange-lite.dev.develop.farm
+  auction:
+    baseUrl: /api/auction
+  http:
+    retry:
+      max-attempts: 5
+      min-backoff: 50
+
+hazelcast:
+  enabled: false
+  service-name: "ad-rtb-server"
+  service-port: "5701"
+  namespace: "europa"
+
